@@ -10,5 +10,6 @@ export default function Home() {
     <SearchBar />
     <Hero />
     <DiscoverSection />
+    <h1>Hello World!</h1>
   </div>
 }
