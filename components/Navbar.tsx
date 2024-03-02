@@ -9,7 +9,7 @@ export function Navbar() {
       <span className="font-bold text-2xl">DI AI</span>
       <ul className="flex gap-10 ">
         <li>
-          <Link href={"#"}>Discover More About</Link>
+          <Link href={'#'}>Discover More About  </Link>
         </li>
         <li>
           <Link href={"#"}>Get Started</Link>
