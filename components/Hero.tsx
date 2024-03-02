@@ -1,6 +1,8 @@
 import Image from "next/image";
-import heroImage from "@/public/next.svg";
+
 import React from "react";
+
+const heroImage = require('@/public/dream-hero.png')
 
 const Hero = () => {
   return (
