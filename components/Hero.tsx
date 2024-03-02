@@ -2,14 +2,14 @@ import Image from "next/image";
 
 import React from "react";
 
-const heroImage = require('@/public/dream-hero.png')
+
 
 const Hero = () => {
   return (
     <div>
       <section className="bg-gradient-to-tl from-black to-neutral-800 w-full h-full relative">
         <Image
-          src={heroImage}
+          src="/dream-hero.png"
           height="750"
           width="1024"
           alt=""
