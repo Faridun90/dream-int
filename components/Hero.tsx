@@ -1,5 +1,5 @@
 import Image from "next/image";
-import heroImage from "@/public/dream-hero.png";
+
 import React from "react";
 
 const Hero = () => {
@@ -7,7 +7,7 @@ const Hero = () => {
     <div>
       <section className="bg-gradient-to-tl from-black to-neutral-800 w-full h-full relative">
         <Image
-          src={heroImage}
+          src="/dream-hero.png"
           height="750"
           width="1024"
           alt=""

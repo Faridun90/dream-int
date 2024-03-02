@@ -1,0 +1,20 @@
+name: TypeScript Error Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  typescript-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: TypeScript Check
+        run: npm run type-check
