@@ -2,7 +2,7 @@ next-env.d.ts
 .next
 .vercel
 pnpm-lock.yaml
-.eslint.json
+.eslintrc.json
 .vscode
 .contentlayer
 tsconfig.json
