@@ -7,9 +7,9 @@ import { prisma } from "@/lib/prisma";
 export default async function Home() {
   const user = await prisma.user.findFirst({
     where: {
-      email: "test@test.com"
-    }
-  })
+      email: "test@test.com",
+    },
+  });
   return (
     <div className="bg-black max-w-screen-xl m-auto h-full">
       <Navbar />
