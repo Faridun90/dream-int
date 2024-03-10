@@ -7,14 +7,18 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "prettier:format": "prettier --write \"**/*.{ts,tsx,js,md,mdx,css,yaml}\"",
     "type-check": "tsc --noEmit",
     "prepare": "husky"
   },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "dependencies": {
+    "@prisma/client": "^5.10.2",
     "next": "14.1.0",
     "react": "^18",
     "react-dom": "^18"
@@ -30,7 +34,9 @@
     "lint-staged": "^15.2.2",
     "postcss": "^8",
     "prettier": "3.2.5",
+    "prisma": "^5.10.2",
     "tailwindcss": "^3.3.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
 }
