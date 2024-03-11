@@ -2,17 +2,16 @@ import DiscoverSection from "@/components/DiscoverSection";
 import Hero from "@/components/Hero";
 import { Navbar } from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 export default async function Home() {
-  const user = await prisma.user.findFirst({
+  const user = await db.user.findFirst({
     where: {
       email: "test@test.com",
     },
   });
   return (
     <div className="bg-black max-w-screen-xl m-auto h-full">
-      <Navbar />
       <SearchBar />
       <Hero />
       <DiscoverSection />
