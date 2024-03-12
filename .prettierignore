@@ -7,3 +7,4 @@ pnpm-lock.yaml
 .contentlayer
 tsconfig.json
 next.config.mjs
+components.json
