@@ -2,8 +2,12 @@
 import React from "react";
 import Button from "./Button";
 import Link from "next/link";
+import { buttonVariants } from "./ui/button";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
-export function Navbar() {
+export async function Navbar() {
+  const session = await getServerSession(authOptions);
   return (
     <div className="flex items-center gap-17 justify-between py-2 mb-2 border-b-[0.3px] border-zinc-700">
       <span className="font-bold text-2xl">DI AI</span>
@@ -21,7 +25,13 @@ export function Navbar() {
           <Link href={"#"}>Menu</Link>
         </li>
       </ul>
-      <Button text="Join" onClick={() => console.log("Button clicked!")} />
+      {session?.user ? (
+        <Button> Sign Out </Button>
+      ) : (
+        <Link className={buttonVariants()} href="/sign-in">
+          Sign in
+        </Link>
+      )}
     </div>
   );
 }

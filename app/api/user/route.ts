@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
-import { hash } from "bcrypt";
+import { hash } from "bcryptjs";
 import * as z from "zod";
 
 //Define schema for input validation
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     if (existingUserByEmail) {
       return NextResponse.json(
         { user: null, message: "User with this email is already existsting" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
           user: null,
           message: "User with this username is already existsting",
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -60,12 +60,12 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       { user: rest, message: "User created successfuly" },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return NextResponse.json(
       { message: "Something went wrong!" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
