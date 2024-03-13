@@ -9,7 +9,9 @@ export async function Navbar() {
   const session = await getServerSession(authOptions);
   return (
     <div className="flex items-center gap-17 justify-between py-2 mb-2 border-b-[0.3px] border-zinc-700 ">
-      <span className="font-bold text-2xl">DI AI</span>
+      <Link href={"/"} className="font-bold text-2xl">
+        DI AI
+      </Link>
       <ul className="flex gap-10 ">
         <li>
           <Link href={"#"}>Discover More About </Link>
