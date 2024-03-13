@@ -25,9 +25,7 @@ export default async function Home() {
           Open My Admin
         </Link>
 
-        <h2>
-          Client Session
-        </h2>
+        <h2>Client Session</h2>
         <User />
 
         <h2>Server Session</h2>
