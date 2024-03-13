@@ -1,2 +1,2 @@
-npm run prettier:format
+npm run prettier:format --write
 npm run type-check
