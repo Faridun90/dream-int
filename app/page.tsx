@@ -16,6 +16,7 @@ export default async function Home() {
     },
   });
   const session = await getServerSession(authOptions);
+
   return (
     <div className="bg-black max-w-screen-xl m-auto h-full">
       <SearchBar />
