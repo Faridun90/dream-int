@@ -1,17 +1,40 @@
-import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth";
-import React from "react";
+"use client"
+import { useSession } from "next-auth/react";
+import React, { useState } from "react";
 
-const page = async () => {
-  const session = await getServerSession(authOptions);
-  if (session?.user) {
+
+const Page = () => {
+  const session = useSession();
+  console.log(session);
+  // const [inputValue, setInputValue] = useState("");
+  const handleInput = (event: any) => {
+
+  }
+  if (session.data?.user) {
     return (
-      <h2 className="text-2xl">
-        Admin page - welcome back {session?.user.username}{" "}
-      </h2>
+      <div>
+        <h2 className="text-2xl">
+          Admin page - welcome back {session.data.user.username}{" "}
+        </h2>
+
+        <div>
+          <input type="text" onChange={handleInput}></input>
+        </div>
+
+      </div>
+
     );
   }
   return <h2 className="text-2xl">Please Log in to see Admin page</h2>;
 };
 
-export default page;
+
+// const Page = () => {
+//   return (
+//     <SessionProvider>
+//       <InnerPage />
+//     </SessionProvider>
+//   )
+// }
+
+export default Page;
