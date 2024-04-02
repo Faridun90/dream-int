@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "strictNullChecks": true,
     "lib": [
       "dom",
       "dom.iterable",
@@ -35,7 +36,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src",
-    "public"
+    "public",
+    "utils/redis.js"
   ],
   "exclude": [
     "node_modules"
