@@ -40,7 +40,7 @@ export const authOptions: NextAuthOptions = {
 
         const passwordMatch = await compare(
           credentials.password,
-          existingUser.password,
+          existingUser.password
         );
 
         if (!passwordMatch) {
@@ -56,7 +56,7 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      console.log(token, user);
+      // console.log(token, user);
       if (user) {
         return {
           ...token,

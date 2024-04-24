@@ -1,4 +1,4 @@
-import { RedisClient, Queue } from "bullmq";
+import { Queue } from "bullmq";
 import redisConnection from "@/utils/redis";
 
 // Define BullMQ queue name

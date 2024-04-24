@@ -13,7 +13,7 @@ async function main() {
       createdAt: new Date(),
     },
   });
-  console.log({ user });
+  // console.log({ user });
 }
 main()
   .then(() => prisma.$disconnect())

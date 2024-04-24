@@ -1,5 +1,5 @@
 import { Job, Worker } from "bullmq";
-import redisConnection from "../utils/redis";
+import redisConnection from "@/utils/redis";
 
 // Define BullMQ queue name
 const QUEUE_NAME = "dreamTasks";
@@ -15,7 +15,7 @@ const worker = new Worker(
     await new Promise((resolve) => setTimeout(resolve, 3000));
     console.log(`Task processed: ${job.id}`);
   },
-  { connection },
+  { connection }
 );
 
 // Start the worker process
