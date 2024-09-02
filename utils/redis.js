@@ -1,11 +1,12 @@
 import Redis from "ioredis";
 
 const redisConfig = {
-  host: process.env.REDIS_HOST || "localhost",
-  port: process.env.REDIS_PORT || 6379,
-  password: process.env.REDIS_PWD,
+  host: REDIS_HOST || "localhost",
+  port: REDIS_PORT || 6379,
+  password: REDIS_PWD,
+  maxRetriesPerRequest: null,
 };
-
+console.log(redisConfig);
 // Create a new Redis client instance
 const redisConnection = new Redis(redisConfig);
 
