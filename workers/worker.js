@@ -15,7 +15,7 @@ const worker = new Worker(
     await new Promise((resolve) => setTimeout(resolve, 3000));
     console.log(`Task processed: ${job.id}`);
   },
-  { connection }
+  { connection },
 );
 
 // Start the worker process

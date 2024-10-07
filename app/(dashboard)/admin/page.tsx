@@ -37,7 +37,7 @@ export default function Page() {
     return (
       <div className="h-full flex gap-3 flex-col mx-auto items-center">
         <h2 className="text-3xl my-10">
-          Admin page - Welcome back:{" "}
+          Admin page - Welcome back:
           <span className="font-semibold text-indigo-300">
             {session.data.user.username}
           </span>
