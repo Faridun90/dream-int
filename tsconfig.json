@@ -37,7 +37,8 @@
     ".next/types/**/*.ts",
     "src",
     "public",
-    "utils/redis.js"
+    "utils/redis.js",
+    "workers/worker.js"
   ],
   "exclude": [
     "node_modules"

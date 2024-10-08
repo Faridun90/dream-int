@@ -1,6 +1,5 @@
 import DiscoverSection from "@/components/DiscoverSection";
 import Hero from "@/components/Hero";
-import { Navbar } from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
 import User from "@/components/User";
 import { buttonVariants } from "@/components/ui/button";

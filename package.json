@@ -1,5 +1,6 @@
 {
   "name": "dream-int",
+  "type": "commonjs",
   "version": "0.1.0",
   "private": true,
   "engines": {
@@ -54,7 +55,7 @@
     "lint-staged": "^15.2.2",
     "postcss": "^8",
     "prettier": "3.2.5",
-    "prisma": "^5.10.2",
+    "prisma": "^5.19.1",
     "tailwindcss": "^3.3.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
