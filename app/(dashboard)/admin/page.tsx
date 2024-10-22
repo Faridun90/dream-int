@@ -9,6 +9,7 @@ export default function Page() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const submitData = { dream: inputValue };
+
     try {
       const res = await fetch("http://localhost:3000/api/dream", {
         method: "POST",
