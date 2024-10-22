@@ -11,13 +11,16 @@ export default function Page() {
     const submitData = { dream: inputValue };
 
     try {
-      const res = await fetch("http://localhost:3000/api/dream", {
-        method: "POST",
-        body: JSON.stringify(submitData),
-        headers: {
-          "content-type": "application/json",
-        },
-      });
+      const res = await fetch(
+        process.env.DREAM_PROD_API || "http://localhost:3000/api/dream",
+        {
+          method: "POST",
+          body: JSON.stringify(submitData),
+          headers: {
+            "content-type": "application/json",
+          },
+        }
+      );
       console.log(res);
       if (res.ok) {
         setInputValue("");
