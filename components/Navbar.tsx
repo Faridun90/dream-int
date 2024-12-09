@@ -1,12 +1,13 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { useSession } from "next-auth/react";
 import UserAccountnav from "./UserAccountnav";
 
-export async function Navbar() {
-  const session = await getServerSession(authOptions);
+export function Navbar() {
+  const { data: session } = useSession();
   return (
     <div className="flex items-center gap-17 justify-between py-2 mb-2 border-b-[0.3px] border-zinc-700 ">
       <Link href={"/"} className="font-bold text-2xl">

@@ -4,14 +4,28 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const Onboarding = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [additionalInfo, setAdditionalInfo] = useState("");
+
+  // Ensure we have the session loaded before showing the form
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (!session) {
+    return <div>Please log in to continue.</div>;
+  }
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const response = await fetch("api/onboard", {
+      console.log("Sending Data:", {
+        userId: session?.user?.id,
+        additionalInfo: additionalInfo,
+      });
+
+      const response = await fetch("/api/onboard", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,10 +39,13 @@ const Onboarding = () => {
       if (response.ok) {
         router.push("/main");
       } else {
+        // Log the error response to understand what went wrong
+        const errorData = await response.json();
+        console.error("Server response:", errorData);
         throw new Error("Failed to complete onboarding");
       }
     } catch (error) {
-      console.error("Error during ondoarding", error);
+      console.error("Error during onboarding:", error);
     }
   };
 
@@ -56,3 +73,5 @@ const Onboarding = () => {
     </div>
   );
 };
+
+export default Onboarding;

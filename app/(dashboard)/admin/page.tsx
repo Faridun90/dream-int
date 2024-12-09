@@ -19,7 +19,7 @@ export default function Page() {
           headers: {
             "content-type": "application/json",
           },
-        }
+        },
       );
       console.log(res);
       if (res.ok) {
