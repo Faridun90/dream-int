@@ -50,7 +50,6 @@ export const authOptions: NextAuthOptions = {
           id: `existingUser.id`,
           username: existingUser.username,
           email: existingUser.email,
-          isOnboarded: existingUser.isOnboarded,
         };
       },
     }),
@@ -61,9 +60,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         return {
           ...token,
-          id: user.id,
           username: user.username,
-          isOnboarded: user.isOnboarded,
         };
       }
       return token;
@@ -73,9 +70,7 @@ export const authOptions: NextAuthOptions = {
         ...session,
         user: {
           ...session.user,
-          id: token.id,
           username: token.username,
-          isOnboarded: token.isOnboarded,
         },
       };
     },
