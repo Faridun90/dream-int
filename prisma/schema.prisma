@@ -19,6 +19,8 @@ model User {
   password  String
   username  String   @unique
   isOnboarded Boolean  @default(false)
+  age          Int?     
+  gender       String?  
   createdAt DateTime @default(now())
   updateAt  DateTime @default(now())
 }
