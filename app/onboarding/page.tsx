@@ -21,9 +21,12 @@ const FormSchema = z.object({
     .number({ invalid_type_error: "Age must be a number" })
     .min(1, "Age must be at least 1")
     .max(120, "Please enter a valid age"),
-  gender: z.enum(["male", "female", "other"], {
-    errorMap: () => ({ message: "Please select a valid gender" }),
-  }),
+  gender: z
+    .enum(["male", "female", "other"])
+    .optional()
+    .refine((val) => val !== undefined, {
+      message: "Gender is required",
+    }),
 });
 
 const OnboardingPage = () => {
@@ -33,7 +36,7 @@ const OnboardingPage = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      age: undefined,
+      age: 0,
       gender: undefined,
     },
   });
@@ -109,12 +112,13 @@ const OnboardingPage = () => {
               <FormControl>
                 <select
                   {...field}
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
                 >
                   <option value="" disabled>
                     Select Gender
                   </option>
-                  <option value="male">male</option>
+
+                  <option value="male">Male</option>
                   <option value="female">Female</option>
                   <option value="other">Other</option>
                 </select>

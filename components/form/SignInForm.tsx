@@ -52,7 +52,7 @@ const SignInForm = () => {
         variant: "destructive",
       });
     } else {
-      router.push("/admin");
+      router.push("/onboarding");
       router.refresh();
     }
   };

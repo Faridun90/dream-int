@@ -15,8 +15,11 @@ export async function POST(req: NextRequest) {
     // Convert session.user.id to a number
     const userId = Number(session.user.id);
 
+    console.log("Session:", session);
+
     // Check if userId is a valid number
     if (isNaN(userId)) {
+      console.log("Invalid user ID:", session.user.id);
       return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
     }
 
