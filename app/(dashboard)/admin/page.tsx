@@ -2,6 +2,8 @@
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 
+export const dynamic = "force-dynamic";
+
 export default function Page() {
   const session = useSession();
   const [inputValue, setInputValue] = useState("");
@@ -19,7 +21,7 @@ export default function Page() {
           headers: {
             "content-type": "application/json",
           },
-        },
+        }
       );
       console.log(res);
       if (res.ok) {

@@ -1,60 +1,134 @@
 "use client";
-import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
-const Onboarding = () => {
-  const { data: session } = useSession();
+const FormSchema = z.object({
+  age: z
+    .number({ invalid_type_error: "Age must be a number" })
+    .min(1, "Age must be at least 1")
+    .max(120, "Please enter a valid age"),
+  gender: z.enum(["male", "female", "other"], {
+    errorMap: () => ({ message: "Please select a valid gender" }),
+  }),
+});
+
+const OnboardingPage = () => {
   const router = useRouter();
-  const [additionalInfo, setAdditionalInfo] = useState("");
+  const { toast } = useToast();
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      age: undefined,
+      gender: undefined,
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof FormSchema>) => {
     try {
-      const response = await fetch("api/onboard", {
+      const response = await fetch("/api/user/onboard", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: session?.user?.id,
-          additionalInfo: additionalInfo,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
       });
 
       if (response.ok) {
-        router.push("/main");
+        toast({
+          title: "Success",
+          description: "Onboarding completed successfully!",
+        });
+        router.push("/admin");
       } else {
-        throw new Error("Failed to complete onboarding");
+        const data = await response.json();
+        toast({
+          title: "Error",
+          description: data.error || "Failed to complete onboarding.",
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      console.error("Error during ondoarding", error);
+      console.error("Error during onboarding:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred.",
+        variant: "destructive",
+      });
     }
   };
 
   return (
-    <div className="h-full flex flex-col gap-3 items-center">
-      <h2 className="text-3xl my-10">Complete Onboarding</h2>
+    <Form {...form}>
       <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-2 border-2 p-3 rounded-md"
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="w-full max-w-md mx-auto mt-16 space-y-6"
       >
-        <input
-          type="text"
-          value={additionalInfo}
-          onChange={(e) => setAdditionalInfo(e.target.value)}
-          placeholder="Enter additional information"
-          className="text-black"
+        <h1 className="text-3xl font-semibold text-center">Onboarding</h1>
+        <p className="text-sm text-center text-gray-600">
+          Complete your profile to continue
+        </p>
+        <FormField
+          control={form.control}
+          name="age"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Age</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder="Enter your age"
+                  {...field}
+                  onChange={
+                    (e) => field.onChange(Number(e.target.value)) // Ensure age is a number
+                  }
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        <button
-          type="submit"
-          className="p-2 w-fit mx-auto hover:bg-indigo-400 border-2 border-indigo-400 rounded-md"
-        >
+        <FormField
+          control={form.control}
+          name="gender"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Gender</FormLabel>
+              <FormControl>
+                <select
+                  {...field}
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                >
+                  <option value="" disabled>
+                    Select Gender
+                  </option>
+                  <option value="male">male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button className="w-full" type="submit">
           Complete Onboarding
-        </button>
+        </Button>
       </form>
-    </div>
+    </Form>
   );
 };
 
-export default Onboarding;
+export default OnboardingPage;
