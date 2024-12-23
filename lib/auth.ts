@@ -4,16 +4,29 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { db } from "./db";
 import { compare } from "bcryptjs";
 
+// Extend the NextAuth User and AdapterUser interfaces
+declare module "next-auth" {
+  interface User {
+    isOnboarded: boolean;
+  }
+
+  interface AdapterUser {
+    isOnboarded: boolean;
+  }
+}
+
+// NextAuth configuration
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(db),
   secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: "jwt",
+    strategy: "jwt", // Use JWT for sessions
   },
   pages: {
-    signIn: "/sign-in",
+    signIn: "/sign-in", // Custom sign-in page
   },
   providers: [
+    // Credentials-based authentication provider
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -24,55 +37,65 @@ export const authOptions: NextAuthOptions = {
         },
         password: { label: "Password", type: "password" },
       },
-
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials?.email || !credentials.password) {
           return null;
         }
 
-        const existingUser = await db.user.findUnique({
-          where: { email: credentials?.email },
+        // Find the user in the database
+        const user = await db.user.findUnique({
+          where: { email: credentials.email },
         });
 
-        if (!existingUser) {
-          return null;
+        if (user && (await compare(credentials.password, user.password))) {
+          // Return user data if authentication is successful
+          return {
+            id: user.id.toString(),
+            email: user.email,
+            username: user.username,
+            isOnboarded: user.isOnboarded,
+          };
         }
 
-        const passwordMatch = await compare(
-          credentials.password,
-          existingUser.password,
-        );
-
-        if (!passwordMatch) {
-          return null;
-        }
-        return {
-          id: `existingUser.id`,
-          username: existingUser.username,
-          email: existingUser.email,
-        };
+        return null; // Return null if authentication fails
       },
     }),
   ],
   callbacks: {
+    // Customize JWT token behavior
     async jwt({ token, user }) {
-      // console.log(token, user);
+      // Add user data to the token during sign-in
       if (user) {
-        return {
-          ...token,
-          username: user.username,
-        };
+        token.id = user.id;
+        token.email = user.email;
+        token.username = user.username;
+        token.isOnboarded = user.isOnboarded;
       }
+
+      // Refresh token data from the database for every request
+      const dbUser = await db.user.findUnique({
+        where: { id: Number(token.id) },
+      });
+
+      if (dbUser) {
+        token.isOnboarded = dbUser.isOnboarded;
+      }
+
       return token;
     },
-    async session({ session, user, token }) {
-      return {
-        ...session,
-        user: {
+    // Add user data to the session object
+    async session({ session, token }) {
+      if (token) {
+        session.user = {
           ...session.user,
-          username: token.username,
-        },
-      };
+          id: token.id as string,
+          email: token.email as string,
+          username: token.username as string,
+          isOnboarded: token.isOnboarded as boolean,
+        };
+      }
+
+      return session;
     },
   },
 };

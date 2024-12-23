@@ -2,7 +2,7 @@ import { enqueueJob } from "@/services/bullmqService";
 
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
   try {
     const dream = await req.json();
     console.log(dream);

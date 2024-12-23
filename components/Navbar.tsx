@@ -1,20 +1,22 @@
 import React from "react";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import UserAccountnav from "./UserAccountnav";
+import { Session } from "next-auth";
 
-export async function Navbar() {
-  const session = await getServerSession(authOptions);
+interface NavbarProps {
+  session: Session | null;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ session }) => {
   return (
     <div className="flex items-center gap-17 justify-between py-2 mb-2 border-b-[0.3px] border-zinc-700 ">
       <Link href={"/"} className="font-bold text-2xl">
         DI AI
       </Link>
-      <ul className="flex gap-10 ">
+      <ul className="flex gap-10">
         <li>
-          <Link href={"#"}>Discover More About </Link>
+          <Link href={"#"}>Discover More About</Link>
         </li>
         <li>
           <Link href={"#"}>Get Started</Link>
@@ -35,4 +37,6 @@ export async function Navbar() {
       )}
     </div>
   );
-}
+};
+
+export default Navbar;

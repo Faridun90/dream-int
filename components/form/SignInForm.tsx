@@ -52,7 +52,15 @@ const SignInForm = () => {
         variant: "destructive",
       });
     } else {
-      router.push("/admin");
+      const response = await fetch("/api/auth/session");
+      const session = await response.json();
+
+      if (session.user.isOnboarded) {
+        router.push("/admin");
+      } else {
+        router.push("/onboarding");
+      }
+
       router.refresh();
     }
   };
