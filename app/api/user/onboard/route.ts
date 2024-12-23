@@ -15,11 +15,11 @@ export async function POST(req: NextRequest) {
     // Convert session.user.id to a number
     const userId = Number(session.user.id);
 
-    console.log("Session:", session);
+    console.log("Session user ID:", userId);
 
     // Check if userId is a valid number
     if (isNaN(userId)) {
-      console.log("Invalid user ID:", session.user.id);
+      console.log("Invalid user ID:", userId);
       return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
     }
 
@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
     if (
       typeof age !== "number" ||
       age <= 18 ||
+      age > 120 ||
       !["male", "female", "other"].includes(gender)
     ) {
       return NextResponse.json(
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
     }
 
     //Update the user's onboarding status and additional info
-    await db.user.update({
+    const updatedUser = await db.user.update({
       where: { id: userId },
       data: {
         isOnboarded: true,
@@ -56,6 +57,8 @@ export async function POST(req: NextRequest) {
         gender,
       },
     });
+
+    console.log("Updated user:", updatedUser);
 
     return NextResponse.json({ message: "Onboarding completed successfuly" });
   } catch (error: any) {

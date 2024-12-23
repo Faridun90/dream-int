@@ -15,11 +15,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
+import { useSession } from "next-auth/react";
 
 const FormSchema = z.object({
   age: z
     .number({ invalid_type_error: "Age must be a number" })
-    .min(1, "Age must be at least 1")
+    .min(18, "Age must be at least 18")
     .max(120, "Please enter a valid age"),
   gender: z
     .enum(["male", "female", "other"])
@@ -33,6 +34,9 @@ const OnboardingPage = () => {
   const router = useRouter();
   const { toast } = useToast();
 
+  const { data: session, update } = useSession();
+  console.log("Session:", session); // Debug: Log session data
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -43,6 +47,7 @@ const OnboardingPage = () => {
 
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
     try {
+      // Send form data to the onboarding API
       const response = await fetch("/api/user/onboard", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -54,7 +59,21 @@ const OnboardingPage = () => {
           title: "Success",
           description: "Onboarding completed successfully!",
         });
-        router.push("/admin");
+
+        // Refresh the session to get updated user data
+        const updatedSession = await update();
+        console.log("Updated session:", updatedSession); // Debug: Log updated session
+
+        // Redirect user based on onboarding status
+        if (updatedSession?.user.isOnboarded) {
+          router.push("/admin");
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to update session data.",
+            variant: "destructive",
+          });
+        }
       } else {
         const data = await response.json();
         toast({
@@ -64,7 +83,6 @@ const OnboardingPage = () => {
         });
       }
     } catch (error) {
-      console.error("Error during onboarding:", error);
       toast({
         title: "Error",
         description: "An unexpected error occurred.",
@@ -74,64 +92,85 @@ const OnboardingPage = () => {
   };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full max-w-md mx-auto mt-16 space-y-6"
-      >
-        <h1 className="text-3xl font-semibold text-center">Onboarding</h1>
-        <p className="text-sm text-center text-gray-600">
-          Complete your profile to continue
+    <div className="min-h-screen flex items-center justify-center bg-black-50">
+      <div className="w-full max-w-md p-8 bg-slate-800 shadow-md rounded-lg">
+        <h1 className="text-3xl font-bold text-gray-300 text-center">
+          Onboarding
+        </h1>
+        <p className="text-sm text-gray-500 text-center mt-2">
+          Let’s get to know you better to personalize your experience.
         </p>
-        <FormField
-          control={form.control}
-          name="age"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Age</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Enter your age"
-                  {...field}
-                  onChange={
-                    (e) => field.onChange(Number(e.target.value)) // Ensure age is a number
-                  }
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="gender"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Gender</FormLabel>
-              <FormControl>
-                <select
-                  {...field}
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
-                >
-                  <option value="" disabled>
-                    Select Gender
-                  </option>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 mt-6"
+          >
+            {/* Age Input Field */}
+            <FormField
+              control={form.control}
+              name="age"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-400 font-medium">
+                    Age
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter your age"
+                      {...field}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        field.onChange(value === "" ? "" : Number(value));
+                      }}
+                      value={field.value || ""}
+                      className="text-gray-900"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button className="w-full" type="submit">
-          Complete Onboarding
-        </Button>
-      </form>
-    </Form>
+            {/* Gender Dropdown */}
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-400 font-medium">
+                    Gender
+                  </FormLabel>
+                  <FormControl>
+                    <select
+                      {...field}
+                      value={field.value || ""}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      className="w-full mt-1 p-2 border rounded-md text-gray-900 focus:ring focus:ring-blue-300 focus:border-blue-500"
+                    >
+                      <option value="" disabled>
+                        Select Gender
+                      </option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Submit Button */}
+            <Button
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-md"
+              type="submit"
+            >
+              Complete Onboarding
+            </Button>
+          </form>
+        </Form>
+      </div>
+    </div>
   );
 };
 

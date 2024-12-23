@@ -1,8 +1,18 @@
-import { NextAuthOptions } from "next-auth";
+import { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { db } from "./db";
 import { compare } from "bcryptjs";
+
+declare module "next-auth" {
+  interface User {
+    isOnboarded: boolean;
+  }
+
+  interface AdapterUser {
+    isOnboarded: boolean;
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(db),
@@ -50,31 +60,40 @@ export const authOptions: NextAuthOptions = {
           id: existingUser.id.toString(),
           username: existingUser.username,
           email: existingUser.email,
+          isOnboarded: existingUser.isOnboarded,
         };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // console.log(token, user);
+      // If the user exists, add user data to the token
       if (user) {
-        return {
-          ...token,
-          id: user.id,
-          username: user.username,
-        };
+        token.isOnboarded = user.isOnboarded;
+        token.id = user.id;
       }
+
+      // Fetch updated user data from the database during every request
+      const dbUser = await db.user.findUnique({
+        where: { id: Number(token.id) },
+      });
+
+      if (dbUser) {
+        token.isOnboarded = dbUser.isOnboarded;
+      }
+
       return token;
     },
     async session({ session, token }) {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: token.id,
-          username: token.username,
-        },
+      session.user = {
+        ...session.user,
+        id: token.id as string,
+        username: token.username as string,
+        email: token.email,
+        isOnboarded: token.isOnboarded as boolean,
       };
+
+      return session;
     },
   },
 };
