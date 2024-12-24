@@ -21,8 +21,8 @@ export default async function Home() {
       <SearchBar />
       <div>
         <h1 className="text-4xl">Home</h1>
-        <Link className={buttonVariants()} href="/admin">
-          Open My Admin
+        <Link className={buttonVariants()} href="/user">
+          Go to my Account
         </Link>
 
         <h2>Client Session</h2>

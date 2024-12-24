@@ -56,7 +56,7 @@ const SignInForm = () => {
       const session = await response.json();
 
       if (session.user.isOnboarded) {
-        router.push("/admin");
+        router.push("/user");
       } else {
         router.push("/onboarding");
       }

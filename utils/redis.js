@@ -14,6 +14,11 @@ const redisConfig = {
 // Create a new Redis client instance
 const redisConnection = new Redis(redisConfig);
 
+// Handle Redis client connection events
+redisConnection.on("connect", () => {
+  console.log("Connected to Redis.");
+});
+
 // Handle Redis client errors
 redisConnection.on("error", (error) => {
   console.error("Error connecting to Redis:", error);
