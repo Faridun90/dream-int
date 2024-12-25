@@ -1,12 +1,39 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DreamSubmissionForm } from "@/components/dashboard/DreamSubmissionForm";
 import { DreamLogHistory } from "@/components/dashboard/DreamLogHistory";
 
+interface Dream {
+  id: number;
+  title: string;
+  content: string;
+  createdAt: string;
+}
+
 export default function UserDashboard() {
   const { data: session } = useSession();
+  const [dreams, setDreams] = useState<Dream[]>([]);
+
+  // Fetch initial dream logs
+  useEffect(() => {
+    const fetchDreams = async () => {
+      try {
+        const res = await fetch("/api/dreams");
+        const data: Dream[] = await res.json();
+        setDreams(data);
+      } catch (err) {
+        console.error("Error fetching dreams:", err);
+      }
+    };
+    fetchDreams();
+  }, []);
+
+  // Handler to add a new dream to the logs
+  const handleAddDream = (newDream: Dream) => {
+    setDreams((prevDreams) => [newDream, ...prevDreams]); // Add the new dream at the top
+  };
 
   if (!session?.user) {
     return (
@@ -24,8 +51,8 @@ export default function UserDashboard() {
         Welcome back,{" "}
         <span className="text-indigo-400">{session.user.username}</span>!
       </h1>
-      <DreamSubmissionForm />
-      <DreamLogHistory />
+      <DreamSubmissionForm onDreamSubmit={handleAddDream} />
+      <DreamLogHistory dreams={dreams} />
     </div>
   );
 }

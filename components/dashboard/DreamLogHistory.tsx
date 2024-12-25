@@ -1,57 +1,37 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import DreamCard from "./DreamCard";
 
-export const DreamLogHistory = () => {
-  interface DreamLog {
-    id: number;
-    title: string;
-    date: string;
-  }
+interface Dream {
+  id: number;
+  title: string;
+  content: string;
+  createdAt: string;
+}
 
-  const [dreamLogs, setDreamLogs] = useState<DreamLog[]>([]);
+interface DreamLogHistoryProps {
+  dreams: Dream[];
+}
 
-  useEffect(() => {
-    const fetchDreamLogs = async () => {
-      try {
-        const response = await fetch("/api/dreams");
-        if (!response.ok) {
-          throw new Error("Failed to fetch dreams");
-        }
-        const logs = await response.json();
-        setDreamLogs(logs.dreams);
-      } catch (error) {
-        console.error("Error fetching dreams:", error);
-      }
-    };
-    fetchDreamLogs();
-  }, []);
+export const DreamLogHistory = ({ dreams }: DreamLogHistoryProps) => {
+  const [error, setError] = useState<string | null>(null);
 
   return (
-    <div className="mt-10">
-      <h2 className="text-xl font-bold text-gray-300 mb-4">
+    <div className="w-full max-w-3xl mx-auto mt-6">
+      <h2 className="text-2xl font-semibold mb-4 text-gray-300">
         Dream Log History
       </h2>
-      {dreamLogs.length === 0 ? (
-        <p className="text-gray-500">No dreams logged yet.</p>
+      {dreams.length === 0 ? (
+        <p className="text-gray-400">
+          No dreams logged yet. Start submitting your dreams!
+        </p>
       ) : (
-        <ul className="space-y-4">
-          {dreamLogs?.map((dream) => (
-            <li
-              key={dream.id}
-              className="p-4 border rounded-lg bg-gray-700 text-white"
-            >
-              <h3 className="font-bold">{dream.title}</h3>
-              <p className="text-sm">{dream.date}</p>
-              <button
-                className="mt-2 text-indigo-400 hover:underline"
-                onClick={() => alert(`Viewing details for: ${dream.title}`)}
-              >
-                View Details
-              </button>
-            </li>
+        <div className="space-y-4">
+          {dreams.map((dream) => (
+            <DreamCard key={dream.id} dream={dream} />
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

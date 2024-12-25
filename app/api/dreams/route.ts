@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     console.log("Job successfully enqueued for user:", userId);
 
     // Respond with success message
-    return NextResponse.json({ message: "Dream submitted successfully" });
+    return NextResponse.json(savedDream, { status: 201 });
   } catch (error) {
     console.error("Error in /api/dream route:", error);
     return NextResponse.json(
@@ -77,7 +77,9 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({ dreams });
+    console.log("Dreams fetched successfully:", dreams);
+
+    return NextResponse.json(dreams);
   } catch (error) {
     console.error("Error fetching dreams:", error);
     return NextResponse.json(
