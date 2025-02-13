@@ -15,11 +15,28 @@ export async function enqueueJob(payload: {
   content: string;
 }): Promise<void> {
   try {
-    // Enqueue a new job with the payload
-    await dreamQueue.add("processDream", { payload });
-    console.log("Job enqueued successfully:", payload);
+    console.log("Attempting to enqueue job:", payload);
+
+    // Enqueue the job
+    const job = await dreamQueue.add("processDream", payload, {
+      attempts: 3,
+      backoff: {
+        type: "exponential",
+        delay: 5000,
+      },
+      removeOnComplete: false, // Keep completed jobs for debugging
+      removeOnFail: false, // Keep failed jobs
+    });
+
+    console.log(`✅ Job enqueued successfully: ID ${job.id}`);
   } catch (error) {
-    console.error("Error enqueuing job:", error);
-    throw new Error("Failed to enqueue job");
+    console.error("❌ Error enqueuing job:", error);
   }
 }
+
+// enqueueJob({
+//   dreamId: 1,
+//   userId: 123,
+//   title: "Flying in a dream",
+//   content: "I was flying over a mountain",
+// });

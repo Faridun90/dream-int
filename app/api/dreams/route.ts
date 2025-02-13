@@ -10,9 +10,9 @@ export async function POST(req: NextRequest) {
     const { title, content } = await req.json();
 
     // Validate input
-    if (!title || !content) {
+    if (!title?.trim() || !content?.trim()) {
       return NextResponse.json(
-        { error: "Title and content are required" },
+        { error: "Title and content are required." },
         { status: 400 },
       );
     }
@@ -39,8 +39,17 @@ export async function POST(req: NextRequest) {
     const savedDream = await saveDreamToDB({ userId, title, content });
     console.log("Received dream data:", { userId, title, content });
 
-    await enqueueJob({ dreamId: savedDream.id, userId, title, content });
-    console.log("Job successfully enqueued for user:", userId);
+    try {
+      const jobPayload = { dreamId: savedDream.id, userId, title, content };
+      console.log("Enqueuing job with payload:", jobPayload);
+
+      await enqueueJob(jobPayload);
+
+      console.log("Job successfully enqueued from api/dreams :", jobPayload);
+    } catch (error) {
+      console.error("Failed to enqueue job:", error);
+      throw error; // Ensure this error bubbles up for proper handling
+    }
 
     // Respond with success message
     return NextResponse.json(savedDream, { status: 201 });

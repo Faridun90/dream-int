@@ -17,6 +17,7 @@ model Dream {
   id          Int      @id @default(autoincrement())
   title       String
   content     String
+  interpretation String?
   userId      Int
   user        User     @relation(fields: [userId], references: [id])
   createdAt   DateTime @default(now())
