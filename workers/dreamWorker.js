@@ -24,11 +24,11 @@ const dreamWorker = new Worker(
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ dream: content }),
-        },
+        }
       );
 
       console.log(
-        `🔄 Sent request to backend API, response status: ${response.status}`,
+        `🔄 Sent request to backend API, response status: ${response.status}`
       );
 
       const responseText = await response.text();
@@ -44,7 +44,7 @@ const dreamWorker = new Worker(
 
       if (!responseData || !responseData.interpretation) {
         throw new Error(
-          `Backend response missing interpretation. Full Response: ${JSON.stringify(responseData)}`,
+          `Backend response missing interpretation. Full Response: ${JSON.stringify(responseData)}`
         );
       }
 
@@ -52,10 +52,17 @@ const dreamWorker = new Worker(
       console.log(`✅ Received interpretation: ${interpretation}`);
 
       // ✅ **Update dream interpretation in database**
-      const updatedDream = await prisma.dream.update({
-        where: { id: dreamId },
-        data: { interpretation },
-      });
+      try {
+        const updatedDream = await prisma.dream.update({
+          where: { id: dreamId },
+          data: { interpretation },
+        });
+        console.log(`✅ Dream ID ${dreamId} updated successfully in DB.`);
+      } catch (error) {
+        console.error(`❌ Failed to update dream in DB: ${error.message}`);
+      } finally {
+        await prisma.$disconnect(); // Ensures Prisma disconnects properly
+      }
 
       console.log(`✅ Dream ID ${dreamId} updated successfully in DB.`);
       console.log(`✅ Job ID: ${job.id} completed successfully`);
@@ -64,7 +71,7 @@ const dreamWorker = new Worker(
       throw error;
     }
   },
-  { connection: redisConnection, concurrency: 5 },
+  { connection: redisConnection, concurrency: 5 }
 );
 
 // Start the worker process
