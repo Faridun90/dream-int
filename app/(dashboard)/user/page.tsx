@@ -4,18 +4,14 @@ import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { DreamSubmissionForm } from "@/components/dashboard/DreamSubmissionForm";
 import { DreamLogHistory } from "@/components/dashboard/DreamLogHistory";
-
-interface Dream {
-  id: number;
-  title: string;
-  content: string;
-  createdAt: string;
-}
+import { DreamInterpretation } from "@/components/dashboard/DreamInterpretation";
+import { Dream } from "@/types/dream";
 
 export default function UserDashboard() {
   const { data: session } = useSession();
   const [dreams, setDreams] = useState<Dream[]>([]);
-
+  const [interpretation, setInterpretation] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   // Fetch initial dream logs
   useEffect(() => {
     const fetchDreams = async () => {
@@ -51,7 +47,15 @@ export default function UserDashboard() {
         Welcome back,{" "}
         <span className="text-indigo-400">{session.user.username}</span>!
       </h1>
-      <DreamSubmissionForm onDreamSubmit={handleAddDream} />
+      <DreamSubmissionForm
+        onDreamSubmit={handleAddDream}
+        setInterpretation={setInterpretation}
+        setIsLoading={setIsLoading}
+      />
+      <DreamInterpretation
+        interpretation={interpretation}
+        isLoading={isLoading}
+      />
       <DreamLogHistory dreams={dreams} />
     </div>
   );

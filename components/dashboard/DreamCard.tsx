@@ -4,6 +4,7 @@ interface Dream {
   id: number;
   title: string;
   content: string;
+  interpretation: string | null;
   createdAt: string;
 }
 
@@ -30,7 +31,16 @@ export default function DreamCard({ dream }: { dream: Dream }) {
           {isOpen ? "Hide Details" : "View Details"}
         </button>
       </div>
-      {isOpen && <div className="mt-4 text-gray-300">{dream.content}</div>}
+      {isOpen && (
+        <div className="mt-4 text-gray-300">
+          <h3>{dream.content}</h3>
+          {dream.interpretation && (
+            <p className="text-sm text-indigo-300 mt-2">
+              {dream.interpretation}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

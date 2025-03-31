@@ -2,35 +2,53 @@
 
 import React, { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-
-interface Dream {
-  id: number;
-  title: string;
-  content: string;
-  createdAt: string;
-}
+import { Dream } from "@/types/dream";
 
 interface DreamSubmissionFormProps {
   onDreamSubmit: (newDream: Dream) => void;
+  setInterpretation: (value: string | null) => void;
+  setIsLoading: (value: boolean) => void;
 }
 
 export const DreamSubmissionForm = ({
   onDreamSubmit,
+  setInterpretation,
+  setIsLoading,
 }: DreamSubmissionFormProps) => {
   const [formData, setFormData] = useState({ title: "", content: "" });
   const [errorMessage, setErrorMessage] = useState("");
+  const [titleError, setTitleError] = useState("");
+  const [contentError, setContentError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = event.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "title") {
+      setTitleError(value.trim() ? "" : "Title is required");
+    }
+
+    if (name === "content") {
+      if (!value.trim()) {
+        setContentError("Content is required");
+      } else if (value.length < 10) {
+        setContentError("Content should be at least 10 characters long");
+      } else if (value.length > 1000) {
+        setContentError("Content should be at most 1000 characters long");
+      } else {
+        setContentError("");
+      }
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (titleError || contentError) return;
     setErrorMessage("");
 
     const { title, content } = formData;
@@ -40,37 +58,56 @@ export const DreamSubmissionForm = ({
       return;
     }
 
-    setIsSubmitting(true); // Set loading state
+    setIsSubmitting(true);
+    setIsLoading(true);
+    setInterpretation(null);
+
     try {
       const res = await fetch("/api/dreams", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, content }),
       });
 
       if (res.ok) {
         const newDream: Dream = await res.json();
-        console.log("New dream from API:", newDream);
         onDreamSubmit(newDream);
         setFormData({ title: "", content: "" });
+
+        // Poll for interpretation
+        const poll = async (retries = 20, delay = 3000) => {
+          for (let i = 0; i < retries; i++) {
+            const res = await fetch(`/api/dreams/${newDream.id}`);
+            if (res.ok) {
+              const updatedDream: Dream = await res.json();
+              if (updatedDream.interpretation) {
+                setInterpretation(updatedDream.interpretation);
+                break;
+              }
+            }
+            await new Promise((resolve) => setTimeout(resolve, delay));
+          }
+          setIsLoading(false);
+        };
+
+        poll();
+
         toast({
-          title: "Dream submitted successfully",
-          description: "Your dream has been submitted successfully",
-          variant: "default",
+          title: "Dream submitted",
+          description: "Your dream is being interpreted...",
         });
       } else {
-        const { error } = await res.json().catch(() => ({
-          error: "Failed to submit dream",
-        }));
+        const { error } = await res
+          .json()
+          .catch(() => ({ error: "Failed to submit dream" }));
         throw new Error(error);
       }
     } catch (error) {
       console.error("Error submitting dream:", error);
       setErrorMessage("An error occurred while submitting your dream");
+      setIsLoading(false);
     } finally {
-      setIsSubmitting(false); // Reset loading state
+      setIsSubmitting(false);
     }
   };
 
@@ -90,10 +127,11 @@ export const DreamSubmissionForm = ({
           value={formData.title}
           onChange={handleChange}
           placeholder="Enter a title for your dream"
-          className={`p-3 border ${
-            !formData.title.trim() ? "border-red-500" : "border-gray-300"
-          } rounded-md text-gray-900 focus:ring-2 focus:ring-indigo-500 outline-none w-full`}
+          className={`p-3 border-[1.5px] ${!formData.title.trim() ? "border-red-500" : "border-gray-300"} rounded-md text-gray-900 outline-none w-full`}
         />
+        {titleError && (
+          <p className="text-red-500 text-sm mt-1">{titleError}</p>
+        )}
       </div>
       <div>
         <label
@@ -109,15 +147,16 @@ export const DreamSubmissionForm = ({
           onChange={handleChange}
           placeholder="Describe your dream..."
           rows={5}
-          className="p-3 border border-gray-300 rounded-md text-gray-900 focus:ring-2 focus:ring-indigo-500 outline-none w-full"
+          className="p-3 border border-gray-300 rounded-md text-gray-900 outline-none w-full"
         />
+        {contentError && (
+          <p className="text-red-500 text-sm mt-1">{contentError}</p>
+        )}
       </div>
       <button
         type="submit"
         disabled={isSubmitting}
-        className={`p-2 ${
-          isSubmitting ? "bg-gray-500" : "bg-indigo-500 hover:bg-indigo-600"
-        } text-white rounded-md`}
+        className={`p-2 ${isSubmitting ? "bg-gray-500" : "bg-indigo-500 hover:bg-indigo-600"} text-white rounded-md`}
       >
         {isSubmitting ? "Submitting..." : "Submit Dream"}
       </button>
