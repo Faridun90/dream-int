@@ -11,10 +11,10 @@ const redisConnection = new Redis({
 
 // Debug Redis connection
 redisConnection.on("connect", () =>
-  console.log("✅ Redis connected successfully.")
+  console.log("✅ Redis connected successfully."),
 );
 redisConnection.on("error", (err) =>
-  console.error("❌ Redis connection error:", err)
+  console.error("❌ Redis connection error:", err),
 );
 
 module.exports = redisConnection;

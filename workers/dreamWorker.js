@@ -24,11 +24,11 @@ const dreamWorker = new Worker(
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ dream: content }),
-        }
+        },
       );
 
       console.log(
-        `🔄 Sent request to backend API, response status: ${response.status}`
+        `🔄 Sent request to backend API, response status: ${response.status}`,
       );
 
       const responseText = await response.text();
@@ -44,7 +44,7 @@ const dreamWorker = new Worker(
 
       if (!responseData || !responseData.interpretation) {
         throw new Error(
-          `Backend response missing interpretation. Full Response: ${JSON.stringify(responseData)}`
+          `Backend response missing interpretation. Full Response: ${JSON.stringify(responseData)}`,
         );
       }
 
@@ -71,7 +71,7 @@ const dreamWorker = new Worker(
       throw error;
     }
   },
-  { connection: redisConnection, concurrency: 5 }
+  { connection: redisConnection, concurrency: 5 },
 );
 
 // Start the worker process
