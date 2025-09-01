@@ -5,17 +5,17 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json(
       { error: "Unauthorized. Please sign in." },
-      { status: 401 },
+      { status: 401 }
     );
   }
 
-  const dreamId = parseInt(params.id, 10);
+  const dreamId = parseInt((await params).id, 10);
   const userId = Number(session.user.id);
 
   try {
@@ -32,7 +32,7 @@ export async function GET(
     console.error("Error fetching dream:", error);
     return NextResponse.json(
       { error: "Internal server error. Please try again later." },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
