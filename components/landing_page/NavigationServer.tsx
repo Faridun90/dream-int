@@ -43,7 +43,7 @@ export default async function NavigationServer() {
       {/* На мобильных можно позже добавить бургер-меню */}
       <div className="md:hidden">
         <Button asChild variant="outline" size="sm">
-          <Link href={user ? "/dashboard" : "/signin"}>
+          <Link href={user ? "/dashboard" : "/sign-in"}>
             {user ? "Dashboard" : "Sign In"}
           </Link>
         </Button>

@@ -13,6 +13,12 @@ const nextConfig = {
    config.externals = [...config.externals, 'bcrypt'];
    return config;
 },
+async redirects() {
+    return [
+      { source: '/signin', destination: '/sign-in', permanent: true },
+      { source: '/signup', destination: '/sign-up', permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;
