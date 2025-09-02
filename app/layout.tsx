@@ -1,14 +1,21 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar"; // Default import
-import { Toaster } from "@/components/ui/toaster";
-import Provider from "@/components/Provider";
-import { authOptions } from "@/lib/auth";
+import AuthSessionProvider from "@/components/providers/AuthSessionProvider";
 import { getServerSession } from "next-auth";
-import { Session } from "next-auth"; // For session typing
+import { authOptions } from "@/lib/auth";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-playfair",
+});
 
 export const metadata: Metadata = {
   title: "Dream Interpreter App",
@@ -20,22 +27,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let session: Session | null = null;
-
-  try {
-    session = await getServerSession(authOptions);
-  } catch (error) {
-    console.error("Failed to fetch session:", error);
-  }
-
+  const session = await getServerSession(authOptions);
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Provider>
-          <Navbar session={session} />
-          <main>{children}</main>
-          <Toaster />
-        </Provider>
+    <html lang="en" className={`${inter.variable} ${playfair.variable} dark`}>
+      <body className="font-sans antialiased">
+        <AuthSessionProvider session={session}>{children}</AuthSessionProvider>
       </body>
     </html>
   );
