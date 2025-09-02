@@ -13,6 +13,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Dream {
+  id          Int      @id @default(autoincrement())
+  title       String
+  content     String
+  interpretation String?
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  analysis    Json?    // Optional: Store AI-generated insights
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
@@ -23,4 +35,5 @@ model User {
   gender       String?  
   createdAt DateTime @default(now())
   updateAt  DateTime @default(now())
+  dreams    Dream[] //Relation to the Dream table
 }

@@ -39,7 +39,7 @@
     "src",
     "public",
     "utils/redis.js",
-    "workers/worker.js"
+    "workers/dreamWorker.js"
   ],
   "exclude": [
     "node_modules"

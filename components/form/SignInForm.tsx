@@ -52,16 +52,25 @@ const SignInForm = () => {
         variant: "destructive",
       });
     } else {
-      const response = await fetch("/api/auth/session");
-      const session = await response.json();
+      try {
+        const response = await fetch("/api/auth/session");
+        const session = await response.json();
 
-      if (session.user.isOnboarded) {
-        router.push("/admin");
-      } else {
-        router.push("/onboarding");
+        if (session.user.isOnboarded) {
+          router.push("/user");
+        } else {
+          router.push("/onboarding");
+        }
+
+        router.refresh();
+      } catch (error) {
+        console.error("Error verifying session:", error);
+        toast({
+          title: "Error",
+          description: "Oops, something went wrong!",
+          variant: "destructive",
+        });
       }
-
-      router.refresh();
     }
   };
 
