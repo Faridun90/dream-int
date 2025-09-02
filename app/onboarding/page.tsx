@@ -67,7 +67,7 @@ const OnboardingPage = () => {
 
         // Redirect user based on onboarding status
         if (updatedSession?.user.isOnboarded) {
-          router.push("/admin");
+          router.push("/user");
         } else {
           toast({
             title: "Error",

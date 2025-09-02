@@ -1,23 +1,20 @@
-// utils/redis.js
-
 const Redis = require("ioredis");
+require("dotenv").config(); // Ensure this line is here if not already
 
-const redisConfig = {
-  // Redis server host
-  host: process.env.REDIS_HOST || "localhost",
-  // Redis server port
-  port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379,
-  // Redis password
-  password: process.env.REDIS_PASSWORD, // Ensure this environment variable is set
-};
-
-// Create a new Redis client instance
-const redisConnection = new Redis(redisConfig);
-
-// Handle Redis client errors
-redisConnection.on("error", (error) => {
-  console.error("Error connecting to Redis:", error);
+const redisConnection = new Redis({
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  password: process.env.REDIS_PASSWORD,
+  maxRetriesPerRequest: null,
+  enableReadyCheck: false,
 });
 
-// Export the Redis client instance
+// Debug Redis connection
+redisConnection.on("connect", () =>
+  console.log("✅ Redis connected successfully."),
+);
+redisConnection.on("error", (err) =>
+  console.error("❌ Redis connection error:", err),
+);
+
 module.exports = redisConnection;

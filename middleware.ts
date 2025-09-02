@@ -15,12 +15,12 @@ export async function middleware(req: NextRequest) {
   }
 
   if (token.isOnboarded && new URL(req.url).pathname === "/onboarding") {
-    return NextResponse.redirect(new URL("/admin", req.url));
+    return NextResponse.redirect(new URL("/user", req.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/onboarding", "/admin"],
+  matcher: ["/onboarding", "/user"],
 };
